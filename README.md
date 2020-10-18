@@ -36,3 +36,9 @@ See the section about [deployment](https://facebook.github.io/create-react-app/d
 
 Check package.json for the installed dependencies
 
+## how to use
+
+On loading, the user will redirect to home page, and he can see the list of added repositories if there any, and an option
+to delete the particular repository. On the right top there is a link to the search page. From the search page the user can 
+search for repositories by selecting one of the check box. On a successful search the user can view the repository name 
+and details in the form of a card and a button to add particular repository to collection.
