@@ -11,18 +11,21 @@ function SearchPage(props) {
     const [loading, setLoading] = useState(false);
     const [userChecked, setUserChecked] = useState(false); //search by username
     const [repoChecked, setRepoChecked] = useState(false);  //search by repository name
+    const [currentPage, setCurrentPage] = useState(1)
 
-    const [page, setPage] = useState(1)
+    function paginationFn(page) {
+        setCurrentPage(page)
+    }
 
     useEffect(() => {
 
         // selecting the url to be fetched
-
+        setCurrentPage(1)
         if (userChecked) {
             URL = `https://api.github.com/users/${search}/repos`
 
         } else if (repoChecked) {
-            URL = `https://api.github.com/search/repositories?q=${search}+in:name&page=2`
+            URL = `https://api.github.com/search/repositories?q=${search}+in:name&page=${currentPage}`
 
         } else {
             URL = ''
@@ -35,13 +38,12 @@ function SearchPage(props) {
                 setLoading(true);
                 fetch(URL)
                     .then(
-
                         (res) => {
-
                             res.json()
                                 .then((resp) => {
                                     setData(resp);
                                     setLoading(false)
+
                                 })
                         }
                     )
@@ -52,10 +54,37 @@ function SearchPage(props) {
                     })
             }
         }, 1000)
-
         return () => clearTimeout(timeOutFn)
-    }, [search])
+    }, ([search]))
 
+    useEffect(() => {
+        if (userChecked) {
+            URL = `https://api.github.com/users/${search}/repos`
+
+        } else if (repoChecked) {
+            URL = `https://api.github.com/search/repositories?q=${search}+in:name&page=${currentPage}`
+
+        } else {
+            URL = ''
+        }
+        fetch(URL)
+            .then(
+                (res) => {
+                    res.json()
+                        .then((resp) => {
+                            setData(resp)
+                            setLoading(false)
+                        })
+                }
+            )
+            .catch((error) => {
+                setLoading(false)
+                setError(true)
+                throw (error)
+            })
+
+
+    }, [currentPage])
 
     return (
         <div className="container mt-2 w-75">
@@ -103,12 +132,10 @@ function SearchPage(props) {
                 </div>
             </div>
             {loading ?
-                <div className="row justify-content-center">
-                    <div className="col-8 float-right ml-auto">
-                        <div className="spinner-border text-secondary" role="status" >
-                            <span className="sr-only">Loading...</span>
-                        </div>
+                <div className="d-flex justify-content-center mb-5">
+                    <div className="spinner-border text-secondary" role="status" >
                     </div>
+
                 </div>
                 : null}
             {!userChecked && !repoChecked ?
@@ -124,7 +151,7 @@ function SearchPage(props) {
             {data.message === "Not Found" ? <div className="alert alert-danger w-50">Try another keyword</div> : null}
             {userChecked ? <ListUserRepos data={data} error={error} addRepos={props.addRepos} /> : null}
             {repoChecked ? <ListRepositories data={data} addRepos={props.addRepos} /> : null}
-
+            {repoChecked && data.total_count > 30 ? <Pagination data={data} paginationFn={paginationFn} page={currentPage}></Pagination> : null}
         </div>
     )
 }

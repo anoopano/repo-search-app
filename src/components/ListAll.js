@@ -1,19 +1,20 @@
-import React, {useState} from 'react';
-import './ListRepos.css';
+import React, { useState } from 'react';
+import './ListAll.css'
 
+//reusable function for listing repositories, used both in ListRepos and ListUserRepos
 function ListRepos({ item, addRepos }) {
     const [starred, setStarred] = useState(false);
 
     return (
-        <div className="listRepos">
-            <li key={item.id}>
+        <div className="listAll">
+            <li className="list" key={item.id}>
                 <div className="card w-100 mt-3">
                     <div className="card-header d-flex justify-content-between">
                         <div>{item.owner.login}</div>
                         <button
                             className=" btn btn-outline-primary"
-                            onClick={() => {addRepos(item); setStarred(true) }}>
-                            {!starred?'Add':'Added'}
+                            onClick={() => { addRepos(item); setStarred(true) }}>
+                            {!starred ? 'Add' : 'Added'}
                         </button>
                     </div>
                     <div className="card-body">
